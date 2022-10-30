@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reflection.PortableExecutable;
+using Core.Interfaces;
 using Core.Models;
 using Infraestructura.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +13,13 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class LugaresController : ControllerBase
     {
-        //todo Aplicando El DBContext al Controlador
-        private readonly ApplicationDbContext _db;//todo inicializar el del constructor
-        public LugaresController(ApplicationDbContext db)
+      //todo inyectar nuestro propio repositorio
+      //todo Inicializarlo
+        private readonly ILugarRepositorio _repo;
+        public LugaresController(ILugarRepositorio repo)
         {
-            _db = db;
+            _repo = repo;
+            
             
         }
 
@@ -24,7 +27,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task< ActionResult<List<Lugar>>> GetLugares()
         {//todo usar metodo asyncrono para un mejor control
-            var lugares= await _db.Lugar.ToListAsync();
+            var lugares= await _repo.GetLugaresAsync();
             return Ok(lugares);
         }
 
@@ -33,7 +36,7 @@ namespace API.Controllers
         public async Task<ActionResult<Lugar>> GetLugar(int id)
         {
 
-            return await _db.Lugar.FindAsync(id);//todo para retornar un solo registro
+            return await _repo.GetLugarAsync(id);//todo para retornar un solo registro
         }
 
 
